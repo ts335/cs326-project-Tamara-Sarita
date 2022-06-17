@@ -1,5 +1,5 @@
 # Team Overview
-Team name: Tamara Sarita
+Team name: Tamara Sarita |
 Application name: "Curious, Big World"  
 Member: Tamara Sarita | github: ts355
 
