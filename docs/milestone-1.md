@@ -1,5 +1,7 @@
 # Team Overview
-Tamara Sarita - github: ts355
+Team name: Tamara Sarita
+Application name: "Curious, Big World"  
+Member: Tamara Sarita | github: ts355
 
 # Application Idea
 My application is a cultural exchange blog where the blogger will post about an interaction they had with a different culture (e.g. travel experience, attended a religious gathering, visited a local cultural festival/event, etc.) in order to inspire others to learn more about the diverse world around us and the people in it. The data used will mostly consist of images, text (title of post, blog's text body, etc), list of countries/cultures, hashtags, and user comments. 
