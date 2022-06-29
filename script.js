@@ -1,17 +1,16 @@
 //intersection observer
 const blogSearch = document.querySelector('#blog-search');
 blogSearch.addEventListener('keyup', filterPosts);
-
+// https://reactgo.com/add-event-listener-multiple-elements-javascript/#:~:text=Adding%20event%20listener%20to%20multiple,an%20event%20listener%20to%20it
 //click on tag to filter blog
-const tag = document.querySelector('.post__meta--taglist_item');
-tag.addEventListener('click', clickTagHandler);
-
-function clickTagHandler() {
-    console.log('Tag clicked.');
-    const taglist = document.querySelectorAll('.post__meta--taglist').forEach(t => {
-        console.log("Print: ", t);
-        });
-}
+const tag = document.querySelectorAll('.post__meta--taglist_item').forEach(t => {
+    console.log(t.innerText);
+    t.addEventListener('click', (t)=>{
+        console.log('tag clicked');
+        console.log(t.explicitOriginalTarget.innerText);
+        //set equal to content of search box
+    });
+});
 
 //filters all blog posts
 function filterPosts() {
