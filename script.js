@@ -6,8 +6,6 @@ const mainNav = document.querySelector('.mainNav');
 
 searchBox.addEventListener('keyup', filterPosts);
 
-
-
 //filters blog posts when user clicks on a tag
 tagList.forEach(tags => {
     tags.addEventListener('click', (t)=>{
