@@ -1,20 +1,27 @@
-//intersection observer
-const blogSearch = document.querySelector('#blog-search');
-blogSearch.addEventListener('keyup', filterPosts);
-// https://reactgo.com/add-event-listener-multiple-elements-javascript/#:~:text=Adding%20event%20listener%20to%20multiple,an%20event%20listener%20to%20it
-//click on tag to filter blog
-const tag = document.querySelectorAll('.post__meta--taglist_item').forEach(t => {
-    console.log(t.innerText);
-    t.addEventListener('click', (t)=>{
-        console.log('tag clicked');
-        console.log(t.explicitOriginalTarget.innerText);
-        //set equal to content of search box
+//constants being used in file
+const searchBox = document.querySelector('#blog-search');
+const tagList = document.querySelectorAll('.post__meta--taglist_item'); //objects
+const header = document.querySelector('.header');
+const mainNav = document.querySelector('.mainNav');
+
+searchBox.addEventListener('keyup', filterPosts);
+
+
+
+//filters blog posts when user clicks on a tag
+tagList.forEach(tags => {
+    tags.addEventListener('click', (t)=>{
+        console.log("Tag Clicked! : ", t); //tag object that was clicked
+        searchBox.value = t.explicitOriginalTarget.innerText; //setting search box's value equal to tag's text 
+        if (searchBox.value) {
+            filterPosts(); //call filter posts when search box has a value
+        }
     });
 });
 
-//filters all blog posts
+//filters blog posts when user types in a value
 function filterPosts() {
-    let filter = blogSearch.value.toLowerCase();
+    let filter = searchBox.value.toLowerCase();
     const posts = document.querySelectorAll('.post').forEach(p => {
         p.innerText.toLowerCase().indexOf(filter) > -1 
         ? p.style.display = "" 
@@ -22,10 +29,8 @@ function filterPosts() {
         });
 
 }
-//enables header at a specific point in scrolling
-const header = document.querySelector('.header');
-const mainNav = document.querySelector('.mainNav');
 
+//intersection observer - enables header background after user has scrolled past a specific point 
 const observerCallback = (e) => {
     !(e[0].isIntersecting) ? mainNav.classList.add("applyBackground") :
     mainNav.classList.remove("applyBackground");
