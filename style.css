@@ -227,3 +227,19 @@ input:focus::placeholder {
     background-color: var(--white-sheer-transparent);
     z-index: -1;
 }
+
+.register {
+    background-color: green;
+    color: white;
+    border-radius: 10px;
+    width: 75px;
+    height: 40px;
+}
+
+.login {
+    background-color: rgb(129, 40, 8);
+    color: white;
+    border-radius: 10px;
+    width: 75px;
+    height: 40px;
+}

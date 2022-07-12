@@ -5,13 +5,52 @@ const mainNav = document.querySelector('.mainNav');
 //Navigation Links
 const homePage = document.querySelector('#home');
 const journalPage = document.querySelector('#journal');
+const loginPage = document.querySelector('#login');
 const aboutusPage = document.querySelector('#aboutus');
 const resourcesPage = document.querySelector('#resources');
 
 let contentSection = document.querySelector('#content');
 
 //content views
-const journalView = `<h1> <center> Hello World! </center> </h1>`;
+//https://www.w3schools.com/howto/howto_css_register_form.asp
+const journalView = `<center><form role="form"  >
+  <div class="container">
+    <h1>Register</h1><br>
+    <p>Please fill in this form to create an account.</p><br>
+    <hr>
+    <label for="firstName"><b>First Name</b></label>
+    <input type="text" placeholder="Enter First Name..." name="firstName" id="firstName" required>
+    <br>
+    <label for="lastName"><b>Last Name</b></label>
+    <input type="text" placeholder="Enter Last Name..." name="lastName" id="lastName" required>
+    <br>
+    <label for="username"><b>Username</b></label>
+    <input type="text" placeholder="Enter Username..." name="userName" id="userName" required>
+    <br>
+    <label for="psw"><b>Password</b></label>
+    <input type="password" placeholder="Enter Password..." name="psw" id="psw" required>
+    <br>
+    <div class="buttons">
+    <button type="submit" class="register">Submit</button>
+    </div></div>
+    <br><br><br>
+    </form></center>`;
+const loginView = `<center><form role="form"  >
+<div class="container">
+  <h1>Login</h1><br>
+  <p>Please sign into your account.</p><br>
+  <hr>
+  <label for="username"><b>Username</b></label>
+  <input type="text" placeholder="Enter Username..." name="userName" id="userName" required>
+  <br>
+  <label for="psw"><b>Password</b></label>
+  <input type="password" placeholder="Enter Password..." name="psw" id="psw" required>
+  <br>
+  <div class="buttons">
+  <button type="submit" class="login">Login</button>
+  </div></div>
+  <br><br><br>
+  </form></center>`;
 const aboutusView = `<h1> <center> About us! </center></h1>`;
 const resourcesView = `<h1> <center>Resources! <center></h1>`;
 const searchView = `<h2 id="blog-post-header">Recent Posts</h2>
@@ -198,6 +237,7 @@ homePage.addEventListener('click', blogContent);
 journalPage.addEventListener('click', journalContent);
 aboutusPage.addEventListener('click', aboutusContent);
 resourcesPage.addEventListener('click', resourcesContent);
+loginPage.addEventListener('click', loginContent);
 
 function blogContent() {
     contentSection.innerHTML = searchView;
@@ -235,6 +275,10 @@ function aboutusContent() {
 
 function resourcesContent() {
     contentSection.innerHTML = resourcesView;
+}
+
+function loginContent() {
+    contentSection.innerHTML = loginView;
 }
 
 
