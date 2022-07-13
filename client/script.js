@@ -6,6 +6,7 @@ const mainNav = document.querySelector('.mainNav');
 const homePage = document.querySelector('#home');
 const journalPage = document.querySelector('#journal');
 const loginPage = document.querySelector('#login');
+const accountPage = document.querySelector('#account');
 const aboutusPage = document.querySelector('#aboutus');
 const resourcesPage = document.querySelector('#resources');
 
@@ -13,7 +14,7 @@ let contentSection = document.querySelector('#content');
 
 //content views
 //https://www.w3schools.com/howto/howto_css_register_form.asp
-const journalView = `<center><form role="form"  >
+const journalView = `<center><form action="/#register" method="post"  >
   <div class="container">
     <h1>Register</h1><br>
     <p>Please fill in this form to create an account.</p><br>
@@ -35,7 +36,33 @@ const journalView = `<center><form role="form"  >
     </div></div>
     <br><br><br>
     </form></center>`;
-const loginView = `<center><form role="form"  >
+
+const accountView = `<center><form action="/#account">
+  <div class="container">
+    <h1>Edit Account Details</h1><br>
+    <p>Fill out the following information to update account info.</p><br>
+    <hr>
+    <label for="firstName"><b>First Name</b></label>
+    <input type="text" placeholder="Enter First Name..." name="firstName" id="firstName">
+    <br>
+    <label for="lastName"><b>Last Name</b></label>
+    <input type="text" placeholder="Enter Last Name..." name="lastName" id="lastName">
+    <br>
+    <label for="username"><b>Username</b></label>
+    <input type="text" placeholder="Enter Username..." name="userName" id="userName">
+    <br>
+    <label for="psw"><b>Password</b></label>
+    <input type="password" placeholder="Enter Password..." name="psw" id="psw">
+    <br>
+    <div class="buttons">
+    <button type="submit" class="register">Update</button>
+    <br><br>
+    <button type="submit" class="login">Delete Account</button>
+    </div></div>
+    <br><br><br>
+    </form></center>`;
+
+export const loginView = `<center><form action="/#login" method="post"  >
 <div class="container">
   <h1>Login</h1><br>
   <p>Please sign into your account.</p><br>
@@ -51,8 +78,11 @@ const loginView = `<center><form role="form"  >
   </div></div>
   <br><br><br>
   </form></center>`;
+
 const aboutusView = `<h1> <center> About us! </center></h1>`;
+
 const resourcesView = `<h1> <center>Resources! <center></h1>`;
+
 const searchView = `<h2 id="blog-post-header">Recent Posts</h2>
 <input type="text" id="blog-search" placeholder="Search for a post...">
 <section class="blog-posts">
@@ -238,6 +268,7 @@ journalPage.addEventListener('click', journalContent);
 aboutusPage.addEventListener('click', aboutusContent);
 resourcesPage.addEventListener('click', resourcesContent);
 loginPage.addEventListener('click', loginContent);
+accountPage.addEventListener('click', accountContent);
 
 function blogContent() {
     contentSection.innerHTML = searchView;
@@ -281,6 +312,10 @@ function loginContent() {
     contentSection.innerHTML = loginView;
 }
 
+function accountContent() {
+    contentSection.innerHTML = accountView;
+}
+
 
 //intersection observer - enables header background after user has scrolled past a specific point 
 const observerCallback = (e) => {
@@ -292,3 +327,5 @@ const observerOptions = {threshold : .4}
 const observer = new IntersectionObserver(observerCallback, observerOptions);
 
 observer.observe(header);
+
+export default loginView;

@@ -1,0 +1,16 @@
+//Test http request methods here
+GET http://localhost:3000/
+###
+GET http://localhost:3000/#register
+###
+POST http://localhost:3000/#register
+Content-Type: application/json
+
+{
+    "firstName": "t",
+    "lastName": "s",
+    "userName": "lol",
+    "psw": "password"
+}
+###
+

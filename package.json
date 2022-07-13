@@ -3,13 +3,13 @@
   "version": "1.0.0",
   "description": "CS 326 Project",
   "type": "module",
-  "main": "server.js",
+  "main": "routes.js",
   "directories": {
     "doc": "docs"
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node server.js"
+    "start": "node server/routes.js"
   },
   "repository": {
     "type": "git",
@@ -22,7 +22,11 @@
   },
   "homepage": "https://github.com/ts335/cs326-project-Tamara-Sarita#readme",
   "dependencies": {
+    "dotenv": "^16.0.1",
     "express": "^4.18.1",
-    "morgan": "^1.10.0"
+    "express-session": "^1.17.3",
+    "morgan": "^1.10.0",
+    "passport": "^0.6.0",
+    "passport-local": "^1.0.0"
   }
 }
