@@ -1,10 +1,9 @@
 import 'dotenv/config';
 import express from "express"; // Include ExpressJS
 import expressSession from 'express-session';
+import main from '.database.js';
 import users from './users.js';
 import auth from './auth.js';
-//import loginView from '/Users/tamarasarita/github-classroom/cs326-project-Tamara-Sarita/client/script.js';
-//import uuid from "uuid";
 import http from 'http';
 import { fileURLToPath } from 'url';
 import { dirname } from 'path';
@@ -13,7 +12,7 @@ const app = express();
 const router = express.Router();
 const server = http.createServer(app);
 const port = process.env.PORT || 3000; 
-//let __dirname = './'; //path of directory
+main();
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(dirname(__filename));
@@ -33,15 +32,6 @@ auth.configure(app); //configure auth
 
 //https://www.simplilearn.com/tutorials/nodejs-tutorial/nodejs-express
 
-//must deploy on heroku and use real database
-let database = { //mock databas
-    id: 1,
-    firstName: "Tamara",
-    lastName: "Sarita",
-    userName: "tsarita",
-    psw: "password"
-}
-
 function checkLoggedIn(req, res, next) {
     if (req.isAuthenticated()) {
       // If we are authenticated, run the next route.
@@ -58,38 +48,23 @@ app.get("/", checkLoggedIn, (req, res) => {
 });
 
 app.get('/login', (req, res) => {
-  res.send(`<center><form action="/#login" method="post"  >
-  <div class="container">
-    <h1>Login</h1><br>
-    <p>Please sign into your account.</p><br>
-    <hr>
-    <label for="username"><b>Username</b></label>
-    <input type="text" placeholder="Enter Username..." name="userName" id="userName" required>
-    <br>
-    <label for="psw"><b>Password</b></label>
-    <input type="password" placeholder="Enter Password..." name="psw" id="psw" required>
-    <br>
-    <div class="buttons">
-    <button type="submit" class="login">Login</button>
-    </div></div>
-    <br><br><br>
-    </form></center>`) 
-});
-
-app.get('/register', (req, res) => {
-  res.send('client/index.html', { root: __dirname  }); 
-});
-
-app.get('/account', (req, res) => {
-  res.send('client/index.html', { root: __dirname })
+  // res.send('client/index.html', { root: __dirname  }); 
 });
 
 app.post('/login', auth.authenticate('local', { //redirects user to 
-    // use username/password authentication
-    successRedirect: '/', // when we login, go to /private
-    failureRedirect: '/login', // otherwise, back to login
-  })
+  // use username/password authentication
+  successRedirect: '/', // when we login, go to /private
+  failureRedirect: '/login', // otherwise, back to login
+})
 );
+
+app.get('/register', (req, res) => {
+  //res.send('client/index.html', { root: __dirname  }); 
+});
+
+app.get('/account', (req, res) => {
+  //res.send('client/index.html', { root: __dirname })
+});
 
 app.post('/register', (req, res) => {
   const { username, password } = req.body;

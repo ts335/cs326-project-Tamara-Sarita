@@ -1,14 +1,15 @@
 import passport from 'passport';
 import passportLocal from 'passport-local';
 import users from './users.js';
-
+import Users from './models/usermodels';
 const { Strategy } = passportLocal;
+//passport and mongoose - link up again
 
 // Passport Configuration
 // Create a new LocalStrategy object to handle authentication using username and
 // password credentials from the client. The LocalStrategy object is used to
 // authenticate a user using a username and password.
-const strategy = new Strategy(async (username, password, done) => {
+const strategy = new Strategy(async (firstName, lastName, username, password, done) => {
   if (!users.findUser(username)) {
     // no such user
     return done(null, false, { message: 'Wrong username' });
@@ -22,6 +23,19 @@ const strategy = new Strategy(async (username, password, done) => {
   }
   // success!
   // should create a user object here, associated with a unique identifier
+
+  const userData = new Users({
+    firstName: firstName, 
+    lastName: lastName,
+    userName: username,
+    password: password,
+  });
+
+  userData.save(function (err) {
+    if (err) return handleError(err);
+    // saved!
+  });
+
   return done(null, username);
 });
 
