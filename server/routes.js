@@ -3,7 +3,7 @@ import express from "express"; // Include ExpressJS
 import expressSession from 'express-session';
 import users from './users.js';
 import auth from './auth.js';
-import loginView from '/Users/tamarasarita/github-classroom/cs326-project-Tamara-Sarita/client/script.js';
+//import loginView from '/Users/tamarasarita/github-classroom/cs326-project-Tamara-Sarita/client/script.js';
 //import uuid from "uuid";
 import http from 'http';
 import { fileURLToPath } from 'url';
@@ -12,7 +12,7 @@ import { dirname } from 'path';
 const app = express();
 const router = express.Router();
 const server = http.createServer(app);
-const port = 3000; 
+const port = process.env.PORT || 3000; 
 //let __dirname = './'; //path of directory
 
 const __filename = fileURLToPath(import.meta.url);
@@ -28,8 +28,9 @@ const sessionConfig = { // Session configuration
 app.use(expressSession(sessionConfig)); //setting up session middleware
 app.use(express.static('client')); //used to render static page
 app.use(express.json()); //for application to accept JSON
-app.use(express.urlencoded({extended: true})); //allows us to grab text from form boxes
-auth.configure(app);
+app.use(express.urlencoded({extended: true})); //gets data from form
+auth.configure(app); //configure auth
+
 //https://www.simplilearn.com/tutorials/nodejs-tutorial/nodejs-express
 
 //must deploy on heroku and use real database
@@ -40,42 +41,86 @@ let database = { //mock databas
     userName: "tsarita",
     psw: "password"
 }
+
 function checkLoggedIn(req, res, next) {
     if (req.isAuthenticated()) {
       // If we are authenticated, run the next route.
       next();
     } else {
       // Otherwise, redirect to the login page.
-      res.redirect('/#login');
+      res.redirect('/login');
     }
   }
 
 //get - reads/retrieves | post - creates | put - updates | delete - removes
-//-/routes
-app.get("/", checkLoggedIn, (request, response) => {
-    //res.render("index.html");
-    response.sendFile( 'client/index.html', { root: __dirname  }); //routing homepage
+app.get("/", checkLoggedIn, (req, res) => {
+    res.sendFile('client/index.html', { root: __dirname  }); //routing homepage
 });
 
-app.get('/register', (req, res) =>
-  res.send(loginView) //how to refer to index.html login view?
-  //dont send file send something else
+app.get('/login', (req, res) => {
+  res.send(`<center><form action="/#login" method="post"  >
+  <div class="container">
+    <h1>Login</h1><br>
+    <p>Please sign into your account.</p><br>
+    <hr>
+    <label for="username"><b>Username</b></label>
+    <input type="text" placeholder="Enter Username..." name="userName" id="userName" required>
+    <br>
+    <label for="psw"><b>Password</b></label>
+    <input type="password" placeholder="Enter Password..." name="psw" id="psw" required>
+    <br>
+    <div class="buttons">
+    <button type="submit" class="login">Login</button>
+    </div></div>
+    <br><br><br>
+    </form></center>`) 
+});
+
+app.get('/register', (req, res) => {
+  res.send('client/index.html', { root: __dirname  }); 
+});
+
+app.get('/account', (req, res) => {
+  res.send('client/index.html', { root: __dirname })
+});
+
+app.post('/login', auth.authenticate('local', { //redirects user to 
+    // use username/password authentication
+    successRedirect: '/', // when we login, go to /private
+    failureRedirect: '/login', // otherwise, back to login
+  })
 );
 
-app.get('/login', (req, res) =>
-  res.send('client/index.html/login', { root: __dirname }) //how to refer to index.html login view?
-  //dont send file send something else
+app.post('/register', (req, res) => {
+  const { username, password } = req.body;
+  if (users.addUser(username, password)) {
+    res.redirect('/login');
+  } else {
+    res.redirect('/register');
+  }
+});
+
+app.get('/account', checkLoggedIn, (req, res) => {
+    // Go to the user's page.
+    res.redirect('/account/' + req.user);
+  }
 );
 
-// Handle post data from the login.html form.
-// app.post(
-//   '/login',
-//   auth.authenticate('local', {
-//     // use username/password authentication
-//     successRedirect: '/private', // when we login, go to /private
-//     failureRedirect: '/login', // otherwise, back to login
-//   })
-// );
+app.get(
+  '/account/:userID/',
+  checkLoggedIn, // We also protect this route: authenticated...
+  (req, res) => {
+    // Verify this is the right user.
+    if (req.params.userID === req.user) {
+      res.writeHead(200, { 'Content-Type': 'text/html' });
+      res.write('<H1>HELLO ' + req.params.userID + '</H1>');
+      res.write('<br/><a href="/logout">click here to logout</a>');
+      res.end();
+    } else {
+      res.redirect('/account/');
+    }
+  }
+);
 
 // app.post("/#register", (req, res) => {
 //     //set variable to database
@@ -95,19 +140,6 @@ app.get('/login', (req, res) =>
 //     //res.send(`First Name: ${firstname} Last Name: ${lastname} Username: ${username} Password: ${password}`);
 // });
 
-// app.post("/#login", (req, res) => {
-//     // authenticate credentials
-//     let username = req.body.userName;
-//     let password = req.body.psw;
-//     res.send(`Username: ${username} Password: ${password}`);
-//     // const found = users.some(user => user.id === parseInt(req.params.id));
-//     // if (found) {
-//     //   res.json(users.filter(user => user.id === parseInt(req.params.id)));
-//     // } else {
-//     //   res.sendStatus(400);
-//     // }
-// });
-
 // app.put("/#account", (req, res) => {
 //     //must know what account is currently logged in
 //     //info to update here
@@ -118,14 +150,8 @@ app.get('/login', (req, res) =>
 //     //account to delete will go here
 // });
 
+app.get('*', (req, res) => {
+  res.send('Error');
+});
 
-// router.get("/:id", (req, res) => {
-//     const found = users.some(user => user.id === parseInt(req.params.id));
-//     if (found) {
-//       res.json(users.filter(user => user.id === parseInt(req.params.id)));
-//     } else {
-//       res.sendStatus(400);
-//     }
-//   });
-
-  server.listen(port, () => console.log("Listening on port ", port)); //listening on specified port
+server.listen(port, () => console.log("Listening on port ", port)); //listening on specified port

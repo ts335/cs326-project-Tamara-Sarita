@@ -62,7 +62,7 @@ const accountView = `<center><form action="/#account">
     <br><br><br>
     </form></center>`;
 
-export const loginView = `<center><form action="/#login" method="post"  >
+ const loginView = `<center><form action="/#login" method="post"  >
 <div class="container">
   <h1>Login</h1><br>
   <p>Please sign into your account.</p><br>
@@ -328,4 +328,4 @@ const observer = new IntersectionObserver(observerCallback, observerOptions);
 
 observer.observe(header);
 
-export default loginView;
+//export default loginView;
