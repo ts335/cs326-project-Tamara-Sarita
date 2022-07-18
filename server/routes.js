@@ -1,7 +1,7 @@
 import 'dotenv/config';
 import express from "express"; // Include ExpressJS
 import expressSession from 'express-session';
-import main from '.database.js';
+//import main from '.database.js';
 import users from './users.js';
 import auth from './auth.js';
 import http from 'http';
@@ -12,7 +12,7 @@ const app = express();
 const router = express.Router();
 const server = http.createServer(app);
 const port = process.env.PORT || 3000; 
-main();
+//main();
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(dirname(__filename));
