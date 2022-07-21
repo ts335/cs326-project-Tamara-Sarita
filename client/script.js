@@ -14,7 +14,7 @@ let contentSection = document.querySelector('#content');
 
 //content views
 //https://www.w3schools.com/howto/howto_css_register_form.asp
-const journalView = `<center><form action="/#register" method="post"  >
+const journalView = `<center><form action="/register" method="post"  >
   <div class="container">
     <h1>Register</h1><br>
     <p>Please fill in this form to create an account.</p><br>
@@ -37,7 +37,7 @@ const journalView = `<center><form action="/#register" method="post"  >
     <br><br><br>
     </form></center>`;
 
-const accountView = `<center><form action="/#account">
+const accountView = `<center><form action="/account">
   <div class="container">
     <h1>Edit Account Details</h1><br>
     <p>Fill out the following information to update account info.</p><br>
@@ -62,7 +62,7 @@ const accountView = `<center><form action="/#account">
     <br><br><br>
     </form></center>`;
 
- const loginView = `<center><form action="/#login" method="post"  >
+ const loginView = `<center><form action="/login" method="post"  >
 <div class="container">
   <h1>Login</h1><br>
   <p>Please sign into your account.</p><br>
@@ -260,9 +260,6 @@ const searchView = `<h2 id="blog-post-header">Recent Posts</h2>
     </div>
 </section>`;
 
-//setting content for default homepage 
-blogContent();
-
 homePage.addEventListener('click', blogContent);
 journalPage.addEventListener('click', journalContent);
 aboutusPage.addEventListener('click', aboutusContent);
@@ -294,6 +291,22 @@ function blogContent() {
             }
         });
     });
+}
+
+const path = window.location.pathname; //tells us which route we are at
+
+switch(path) {
+    case "/register":
+        journalContent();
+        break;
+    case "/login":
+        loginContent();
+        break;
+    case "/account":
+        accountContent();
+        break;
+    default:
+        blogContent();
 }
 
 function journalContent() {

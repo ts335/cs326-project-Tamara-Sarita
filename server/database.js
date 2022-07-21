@@ -1,15 +1,12 @@
 import 'dotenv/config';
 import { MongoClient, ServerApiVersion } from 'mongodb';
 
-const uri = "mongodb+srv://tsarita:<password>@cluster0.xrflg7s.mongodb.net/?retryWrites=true&w=majority";
+const uri = "mongodb+srv://tsarita:01763@cluster0.xrflg7s.mongodb.net/?retryWrites=true&w=majority";
 
-export class PeopleDatabase {
-  constructor(dburl) {
-    this.dburl = dburl;
-  }
+export default class PeopleDatabase {
 
   async connect() {
-    this.client = await MongoClient.connect(this.dburl, {
+    this.client = await MongoClient.connect(uri, {
       useNewUrlParser: true,
       useUnifiedTopology: true,
       serverApi: ServerApiVersion.v1,
@@ -29,10 +26,10 @@ export class PeopleDatabase {
 
     if (count === 0) {
       await this.collection.insertMany([
-        { _id: '1', name: 'Artemis', age: 19 },
-        { _id: '2', name: 'Parzival', age: 17 },
-        { _id: '3', name: 'John', age: 30 },
-        { _id: '4', name: 'Mia', age: 22 },
+        { _id: '1', firstname: 'Artemis', lastname: 'A', username: "Art", psw: "abc123" },
+        { _id: '2', firstname: 'Parzival', lastname: 'P', username: "Parz", psw: "abc456" },
+        { _id: '3', firstname: 'John', lastname: 'J', username: "Jay", psw: "abc789" },
+        { _id: '4', firstname: 'Mia', lastname: 'M', username: "Miam", psw: "abc101" },
       ]);
     }
   }
@@ -43,8 +40,8 @@ export class PeopleDatabase {
   }
 
   // CREATE a user in the database.
-  async createPerson(id, name, age) {
-    const res = await this.collection.insertOne({ _id: id, name, age });
+  async createPerson(firstname, lastname, username, psw) {
+    const res = await this.collection.insertOne({ firstname, lastname, username, psw });
     // Note: the result received back from MongoDB does not contain the
     // entire document that was inserted into the database. Instead, it
     // only contains the _id of the document (and an acknowledged field).
@@ -58,10 +55,10 @@ export class PeopleDatabase {
   }
 
   // UPDATE a user in the database.
-  async updatePerson(id, name, age) {
+  async updatePerson(id, firstname, username, lastname, psw ) {
     const res = await this.collection.updateOne(
       { _id: id },
-      { $set: { name, age } }
+      { $set: { firstname, username, lastname, psw } }
     );
     return res;
   }

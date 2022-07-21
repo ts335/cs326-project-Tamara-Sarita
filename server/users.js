@@ -1,3 +1,8 @@
+import PeopleDatabase from './database.js'; 
+const db = new PeopleDatabase();
+
+await db.connect(); 
+
 class Users {
     constructor() {
       // we use an in-memory "database"; this isn't persistent but is easy
@@ -27,11 +32,11 @@ class Users {
     }
   
     // Add a user to the "database".
-    addUser(name, pwd) {
-      if (this.findUser(name)) {
+    addUser(firstName, lastName, userName, psw) {
+      if (this.findUser(userName)) {
         return false;
       }
-      this.users[name] = pwd;
+      this.users[userName] = pwd;
       return true;
     }
   }

@@ -1,18 +1,19 @@
 import 'dotenv/config';
-import express from "express"; // Include ExpressJS
+import express from "express"; 
 import expressSession from 'express-session';
-//import main from '.database.js';
-import users from './users.js';
 import auth from './auth.js';
 import http from 'http';
 import { fileURLToPath } from 'url';
 import { dirname } from 'path';
+import PeopleDatabase from './database.js'; 
 
 const app = express();
-const router = express.Router();
 const server = http.createServer(app);
 const port = process.env.PORT || 3000; 
-//main();
+
+const db = new PeopleDatabase();
+
+await db.connect(); 
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(dirname(__filename));
@@ -28,7 +29,7 @@ app.use(expressSession(sessionConfig)); //setting up session middleware
 app.use(express.static('client')); //used to render static page
 app.use(express.json()); //for application to accept JSON
 app.use(express.urlencoded({extended: true})); //gets data from form
-auth.configure(app); //configure auth
+auth.configure(app, db); //configure auth
 
 //https://www.simplilearn.com/tutorials/nodejs-tutorial/nodejs-express
 
@@ -48,7 +49,17 @@ app.get("/", checkLoggedIn, (req, res) => {
 });
 
 app.get('/login', (req, res) => {
-  // res.send('client/index.html', { root: __dirname  }); 
+  res.sendFile('client/index.html', { root: __dirname  }); 
+});
+
+app.get('/register', (req, res) => {
+  res.sendFile('client/index.html', { root: __dirname  }); 
+});
+
+app.get('/account', checkLoggedIn, (req, res) => {
+  // Go to the user's page.
+  res.sendFile('client/index.html', { root: __dirname  }); 
+  res.redirect('/account/' + req.user);
 });
 
 app.post('/login', auth.authenticate('local', { //redirects user to 
@@ -58,28 +69,15 @@ app.post('/login', auth.authenticate('local', { //redirects user to
 })
 );
 
-app.get('/register', (req, res) => {
-  //res.send('client/index.html', { root: __dirname  }); 
-});
+app.post('/register', async (req, res) => {
+  const { firstName, lastName, userName, psw } = req.body;
 
-app.get('/account', (req, res) => {
-  //res.send('client/index.html', { root: __dirname })
-});
-
-app.post('/register', (req, res) => {
-  const { username, password } = req.body;
-  if (users.addUser(username, password)) {
+  if (await db.createPerson(firstName, lastName, userName, psw)) {
     res.redirect('/login');
   } else {
     res.redirect('/register');
   }
 });
-
-app.get('/account', checkLoggedIn, (req, res) => {
-    // Go to the user's page.
-    res.redirect('/account/' + req.user);
-  }
-);
 
 app.get(
   '/account/:userID/',
@@ -96,34 +94,6 @@ app.get(
     }
   }
 );
-
-// app.post("/#register", (req, res) => {
-//     //set variable to database
-//     let newUser = { 
-//     id: uuid.v4(),
-//     firstname: req.body.firstName,
-//     lastname: req.body.lastName,
-//     userName: req.body.userName,
-//     psw: req.body.psw
-//    }
-//    if (!newUser.userName) {
-//     return res.sendStatus(400);
-//    }
-//    database.push(newUser);
-//    //res.json(users);//sending json of users
-//    res.status(201).send(); //sending blank response to user
-//     //res.send(`First Name: ${firstname} Last Name: ${lastname} Username: ${username} Password: ${password}`);
-// });
-
-// app.put("/#account", (req, res) => {
-//     //must know what account is currently logged in
-//     //info to update here
-// });
-
-// app.delete("/#account", (req, res) => {
-//     //must know what account is logged in
-//     //account to delete will go here
-// });
 
 app.get('*', (req, res) => {
   res.send('Error');

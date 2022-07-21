@@ -1,40 +1,32 @@
 import passport from 'passport';
 import passportLocal from 'passport-local';
-import users from './users.js';
-import Users from './models/usermodels';
+
 const { Strategy } = passportLocal;
-//passport and mongoose - link up again
+let db;
 
 // Passport Configuration
 // Create a new LocalStrategy object to handle authentication using username and
 // password credentials from the client. The LocalStrategy object is used to
 // authenticate a user using a username and password.
-const strategy = new Strategy(async (firstName, lastName, username, password, done) => {
-  if (!users.findUser(username)) {
-    // no such user
-    return done(null, false, { message: 'Wrong username' });
+const strategy = new Strategy(async (username, password, done) => {
+  if (!db){
+    return done(null, false, {message: "db not ready!"});
   }
-  if (!users.validatePassword(username, password)) {
+  const user = await db.findOne({
+    username
+  });
+  if (!user) {
+    // no such user
+    return done(null, false, { message: 'No username' });
+  }
+  if (user.psw !== password) { //does the user have the paswword
     // invalid password
     // should disable logins after N messages
     // delay return to rate-limit brute-force attacks
     await new Promise((r) => setTimeout(r, 2000)); // two second delay
-    return done(null, false, { message: 'Wrong password' });
+    return done(null, false, { message: 'Wrong password!' });
   }
   // success!
-  // should create a user object here, associated with a unique identifier
-
-  const userData = new Users({
-    firstName: firstName, 
-    lastName: lastName,
-    userName: username,
-    password: password,
-  });
-
-  userData.save(function (err) {
-    if (err) return handleError(err);
-    // saved!
-  });
 
   return done(null, username);
 });
@@ -55,12 +47,13 @@ passport.deserializeUser((uid, done) => {
 });
 
 export default {
-  configure: (app) => {
+  configure: (app, _db) => {
+    db = _db;
     app.use(passport.initialize());
     app.use(passport.session());
   },
 
-  authenticate: (domain, where) => {
+  authenticate: (domain, where) => { //needs access to db
     return passport.authenticate(domain, where);
   },
 };
