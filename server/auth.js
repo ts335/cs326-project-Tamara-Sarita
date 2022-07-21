@@ -19,7 +19,8 @@ const strategy = new Strategy(async (username, password, done) => {
     // no such user
     return done(null, false, { message: 'No username' });
   }
-  if (user.psw !== password) { //does the user have the paswword
+
+  if (user.psw !== password) { //does the user have the password
     // invalid password
     // should disable logins after N messages
     // delay return to rate-limit brute-force attacks

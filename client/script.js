@@ -4,17 +4,14 @@ const mainNav = document.querySelector('.mainNav');
 
 //Navigation Links
 const homePage = document.querySelector('#home');
-const journalPage = document.querySelector('#journal');
+const registerPage = document.querySelector('#register');
 const loginPage = document.querySelector('#login');
 const accountPage = document.querySelector('#account');
-const aboutusPage = document.querySelector('#aboutus');
-const resourcesPage = document.querySelector('#resources');
 
 let contentSection = document.querySelector('#content');
 
 //content views
-//https://www.w3schools.com/howto/howto_css_register_form.asp
-const journalView = `<center><form action="/register" method="post"  >
+const registerView = `<center><form action="/register" method="post"  >
   <div class="container">
     <h1>Register</h1><br>
     <p>Please fill in this form to create an account.</p><br>
@@ -37,7 +34,7 @@ const journalView = `<center><form action="/register" method="post"  >
     <br><br><br>
     </form></center>`;
 
-const accountView = `<center><form action="/account">
+const accountView = `<center><form action="/account" method="post">
   <div class="container">
     <h1>Edit Account Details</h1><br>
     <p>Fill out the following information to update account info.</p><br>
@@ -62,7 +59,7 @@ const accountView = `<center><form action="/account">
     <br><br><br>
     </form></center>`;
 
- const loginView = `<center><form action="/login" method="post"  >
+ const loginView = `<center><form action="/login" method="post">
 <div class="container">
   <h1>Login</h1><br>
   <p>Please sign into your account.</p><br>
@@ -78,10 +75,6 @@ const accountView = `<center><form action="/account">
   </div></div>
   <br><br><br>
   </form></center>`;
-
-const aboutusView = `<h1> <center> About us! </center></h1>`;
-
-const resourcesView = `<h1> <center>Resources! <center></h1>`;
 
 const searchView = `<h2 id="blog-post-header">Recent Posts</h2>
 <input type="text" id="blog-search" placeholder="Search for a post...">
@@ -261,9 +254,7 @@ const searchView = `<h2 id="blog-post-header">Recent Posts</h2>
 </section>`;
 
 homePage.addEventListener('click', blogContent);
-journalPage.addEventListener('click', journalContent);
-aboutusPage.addEventListener('click', aboutusContent);
-resourcesPage.addEventListener('click', resourcesContent);
+registerPage.addEventListener('click', registerContent);
 loginPage.addEventListener('click', loginContent);
 accountPage.addEventListener('click', accountContent);
 
@@ -297,7 +288,7 @@ const path = window.location.pathname; //tells us which route we are at
 
 switch(path) {
     case "/register":
-        journalContent();
+        registerContent();
         break;
     case "/login":
         loginContent();
@@ -309,16 +300,8 @@ switch(path) {
         blogContent();
 }
 
-function journalContent() {
-    contentSection.innerHTML = journalView;
-}
-
-function aboutusContent() {
-    contentSection.innerHTML = aboutusView;
-}
-
-function resourcesContent() {
-    contentSection.innerHTML = resourcesView;
+function registerContent() {
+    contentSection.innerHTML = registerView;
 }
 
 function loginContent() {
@@ -328,7 +311,6 @@ function loginContent() {
 function accountContent() {
     contentSection.innerHTML = accountView;
 }
-
 
 //intersection observer - enables header background after user has scrolled past a specific point 
 const observerCallback = (e) => {
@@ -340,5 +322,3 @@ const observerOptions = {threshold : .4}
 const observer = new IntersectionObserver(observerCallback, observerOptions);
 
 observer.observe(header);
-
-//export default loginView;

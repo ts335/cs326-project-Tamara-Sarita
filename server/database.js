@@ -55,9 +55,9 @@ export default class PeopleDatabase {
   }
 
   // UPDATE a user in the database.
-  async updatePerson(id, firstname, username, lastname, psw ) {
+  async updatePerson(firstname, username, lastname, psw ) {
     const res = await this.collection.updateOne(
-      { _id: id },
+      //{ _id: id },
       { $set: { firstname, username, lastname, psw } }
     );
     return res;

@@ -10,9 +10,7 @@ import PeopleDatabase from './database.js';
 const app = express();
 const server = http.createServer(app);
 const port = process.env.PORT || 3000; 
-
 const db = new PeopleDatabase();
-
 await db.connect(); 
 
 const __filename = fileURLToPath(import.meta.url);
@@ -31,7 +29,21 @@ app.use(express.json()); //for application to accept JSON
 app.use(express.urlencoded({extended: true})); //gets data from form
 auth.configure(app, db); //configure auth
 
-//https://www.simplilearn.com/tutorials/nodejs-tutorial/nodejs-express
+/*Checklist:
+|||Backend HTTP Server API:
+- HTTP server provides API endpoints (routes) for at least one of each CRUD operation - Create, Read, Update, and Delete
+- There must be at least one route that receives/responds JSON from the front-end browser
+|||Front-End Fetch and Render:
+- Separate JS file where each API endpoint in the back-end server is called by the front-end using FETCH
+- There must be at least one fetch that sends/receives JSON to the back-end server
+- At least one fetch uses data provided as input from the user (e.g., textbox)
+-At least one fetch receives data from the server and changes data in the client that is re-rendered to the 
+user interface (e.g., scoreboard, todo list, calculator results)
+|||Database: 
+- The back-end receives data from the front-end and stores it in the database.
+- The back-end gets data from the database and sends it back to the front-end.
+
+*/
 
 function checkLoggedIn(req, res, next) {
     if (req.isAuthenticated()) {
@@ -52,26 +64,18 @@ app.get('/login', (req, res) => {
   res.sendFile('client/index.html', { root: __dirname  }); 
 });
 
+app.post('/login', auth.authenticate('local', { //redirects user to 
+  successRedirect: '/', // when we login, go to /private
+  failureRedirect: '/login', // otherwise, back to login
+}));
+
 app.get('/register', (req, res) => {
   res.sendFile('client/index.html', { root: __dirname  }); 
 });
 
-app.get('/account', checkLoggedIn, (req, res) => {
-  // Go to the user's page.
-  res.sendFile('client/index.html', { root: __dirname  }); 
-  res.redirect('/account/' + req.user);
-});
-
-app.post('/login', auth.authenticate('local', { //redirects user to 
-  // use username/password authentication
-  successRedirect: '/', // when we login, go to /private
-  failureRedirect: '/login', // otherwise, back to login
-})
-);
-
 app.post('/register', async (req, res) => {
-  const { firstName, lastName, userName, psw } = req.body;
 
+  const { firstName, lastName, userName, psw } = req.body;
   if (await db.createPerson(firstName, lastName, userName, psw)) {
     res.redirect('/login');
   } else {
@@ -79,21 +83,29 @@ app.post('/register', async (req, res) => {
   }
 });
 
-app.get(
-  '/account/:userID/',
-  checkLoggedIn, // We also protect this route: authenticated...
-  (req, res) => {
-    // Verify this is the right user.
-    if (req.params.userID === req.user) {
-      res.writeHead(200, { 'Content-Type': 'text/html' });
-      res.write('<H1>HELLO ' + req.params.userID + '</H1>');
-      res.write('<br/><a href="/logout">click here to logout</a>');
-      res.end();
-    } else {
-      res.redirect('/account/');
-    }
-  }
-);
+app.get('/account', checkLoggedIn, (req, res) => {
+  // Go to the user's page.
+  res.sendFile('client/index.html', { root: __dirname  }); 
+  //use "readPerson" function to display username or first name on page?
+  res.write('<H1>HELLO ' + req.params.username + '</H1>');
+});
+
+app.post('/account', checkLoggedIn, (req, res) => {
+  //update user account details
+  // const { firstName, lastName, userName, psw } = req.body;
+  // if (await db.updatePerson(firstName, lastName, userName, psw)) {
+  //   res.redirect('/account');
+  // } else {
+  //   res.redirect('/account');
+  // }
+
+  //delete user account on this page as well
+  // if (await db.deletePerson(firstName, lastName, userName, psw)) {
+  //   res.redirect('/account');
+  // } else {
+  //   res.redirect('/account');
+  // }
+});
 
 app.get('*', (req, res) => {
   res.send('Error');
