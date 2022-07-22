@@ -52,9 +52,9 @@ const accountView = `<center><form action="/account" method="post">
     <input type="password" placeholder="Enter Password..." name="psw" id="psw">
     <br>
     <div class="buttons">
-    <button type="submit" class="register">Update</button>
+    <button type="submit" id="update" class="login">Update</button>
     <br><br>
-    <button type="submit" class="login">Delete Account</button>
+    <button type="button" id="delete" class="register">Delete Account</button>
     </div></div>
     <br><br><br>
     </form></center>`;
@@ -300,16 +300,111 @@ switch(path) {
         blogContent();
 }
 
+let respData;
+
 function registerContent() {
     contentSection.innerHTML = registerView;
+    const form = contentSection.querySelector("form");
+    form.addEventListener("submit", async (event) => {
+        event.preventDefault();
+        const formData = new FormData(form);
+        var object = {};
+        formData.forEach(function(value, key){
+            object[key] = value;
+        });
+        var json = JSON.stringify(object);
+        const resp = await fetch("/register", { //returns promise
+            method:"POST",
+            body:json, //passing form data as body of request
+            headers: {'Content-Type': 'application/json'}
+        });
+        respData = await resp.json(); //only asking for json data on body of response
+        if (resp.ok) {
+            loginContent();
+        }
+    });
 }
 
 function loginContent() {
     contentSection.innerHTML = loginView;
+    const form = contentSection.querySelector("form");
+    form.addEventListener("submit", async (event) => {
+        event.preventDefault();
+        const formData = new FormData(form);
+        var object = {};
+        formData.forEach(function(value, key){
+            object[key] = value;
+        });
+        var json = JSON.stringify(object);
+        const resp = await fetch("/login", { //returns promise
+            method:"POST",
+            body:json, //passing form data as body of request
+            headers: {'Content-Type': 'application/json'}
+        });
+        respData = await resp.json(); //only asking for json data on body of response - make global - persist response
+
+        if (resp.ok) { 
+            accountContent();
+        } else {
+            alert('Invalid login. Try again.');
+            loginContent();
+        }
+    });
 }
 
 function accountContent() {
+    //if user is logged in display view otherwise send alert and redirect user back to homepage by calling blogContent()
     contentSection.innerHTML = accountView;
+    //go through form data fields and go through global resp.json variable to fill in the data
+     //write a personalized welcome message for the user
+
+    let currentUserId = respData._id;
+
+    const form = contentSection.querySelector("form");
+    
+
+    let firstNameField = contentSection.querySelector("#firstName");
+    let lastNameField = contentSection.querySelector("#lastName");
+    let userNameField = contentSection.querySelector("#userName");
+    let passwordField = contentSection.querySelector("#psw");
+    let deleteBtn = contentSection.querySelector("#delete");
+
+    firstNameField.value = respData.firstname;
+    lastNameField.value = respData.lastname;
+    userNameField.value = respData.username;
+    passwordField.value = respData.psw;
+
+
+    form.addEventListener("submit", async (event) => { //here we add event listener for update button to submit new form data
+        event.preventDefault();
+        const formData = new FormData(form);
+        var object = {id: currentUserId};
+        formData.forEach(function(value, key){
+            object[key] = value;
+        });
+        var json = JSON.stringify(object);
+        const resp = await fetch("/account", { //returns promise
+            method: "PUT",
+            body: json, //passing form data as body of request
+            headers: {'Content-Type': 'application/json'}
+        });
+        respData = await resp.json(); //only asking for json data on body of response - make global - persist response
+    });
+
+    //add event listener for delete button that will fetch homepage once user is deleted. 
+    deleteBtn.addEventListener("click", async(event) => {
+        var jsonID={id: currentUserId};
+        jsonID = JSON.stringify(jsonID);
+        const resp = await fetch("/account", { //returns promise
+            method:"DELETE",
+            body: jsonID, //passing form data as body of request
+            headers: {'Content-Type': 'application/json'}
+        });
+        respData = await resp.json();
+        if (resp.ok) {
+            blogContent();
+        }
+    });
 }
 
 //intersection observer - enables header background after user has scrolled past a specific point 

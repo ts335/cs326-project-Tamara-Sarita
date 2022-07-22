@@ -29,22 +29,6 @@ app.use(express.json()); //for application to accept JSON
 app.use(express.urlencoded({extended: true})); //gets data from form
 auth.configure(app, db); //configure auth
 
-/*Checklist:
-|||Backend HTTP Server API:
-- HTTP server provides API endpoints (routes) for at least one of each CRUD operation - Create, Read, Update, and Delete
-- There must be at least one route that receives/responds JSON from the front-end browser
-|||Front-End Fetch and Render:
-- Separate JS file where each API endpoint in the back-end server is called by the front-end using FETCH
-- There must be at least one fetch that sends/receives JSON to the back-end server
-- At least one fetch uses data provided as input from the user (e.g., textbox)
--At least one fetch receives data from the server and changes data in the client that is re-rendered to the 
-user interface (e.g., scoreboard, todo list, calculator results)
-|||Database: 
-- The back-end receives data from the front-end and stores it in the database.
-- The back-end gets data from the database and sends it back to the front-end.
-
-*/
-
 function checkLoggedIn(req, res, next) {
     if (req.isAuthenticated()) {
       // If we are authenticated, run the next route.
@@ -55,56 +39,67 @@ function checkLoggedIn(req, res, next) {
     }
   }
 
-//get - reads/retrieves | post - creates | put - updates | delete - removes
 app.get("/", checkLoggedIn, (req, res) => {
     res.sendFile('client/index.html', { root: __dirname  }); //routing homepage
 });
-
-app.get('/login', (req, res) => {
-  res.sendFile('client/index.html', { root: __dirname  }); 
-});
-
-app.post('/login', auth.authenticate('local', { //redirects user to 
-  successRedirect: '/', // when we login, go to /private
-  failureRedirect: '/login', // otherwise, back to login
-}));
 
 app.get('/register', (req, res) => {
   res.sendFile('client/index.html', { root: __dirname  }); 
 });
 
 app.post('/register', async (req, res) => {
-
   const { firstName, lastName, userName, psw } = req.body;
-  if (await db.createPerson(firstName, lastName, userName, psw)) {
-    res.redirect('/login');
-  } else {
-    res.redirect('/register');
+  try {
+    const newUser = await db.createPerson(firstName, lastName, userName, psw);
+    res.json(newUser); 
+  } catch(error) {
+    console.log(error);
+    res.status(500).send("Error registering user");
   }
 });
 
-app.get('/account', checkLoggedIn, (req, res) => {
-  // Go to the user's page.
+app.get('/login', (req, res) => {
   res.sendFile('client/index.html', { root: __dirname  }); 
-  //use "readPerson" function to display username or first name on page?
-  res.write('<H1>HELLO ' + req.params.username + '</H1>');
 });
 
-app.post('/account', checkLoggedIn, (req, res) => {
-  //update user account details
-  // const { firstName, lastName, userName, psw } = req.body;
-  // if (await db.updatePerson(firstName, lastName, userName, psw)) {
-  //   res.redirect('/account');
-  // } else {
-  //   res.redirect('/account');
-  // }
+app.post('/login', async (req, res) =>{
 
-  //delete user account on this page as well
-  // if (await db.deletePerson(firstName, lastName, userName, psw)) {
-  //   res.redirect('/account');
-  // } else {
-  //   res.redirect('/account');
-  // }
+  const { id, userName, psw } = req.body; 
+  const user = await db.readPerson(userName);
+  if (!user) {
+    return res.status(400).send("Invalid username. Try again."); //maybe add alert and redirect them?
+  }
+  if (user.psw !== psw) { 
+    await new Promise((r) => setTimeout(r, 2000)); 
+    return res.status(400).send("Invalid password"); //maybe add alert and redirect them?
+  }
+  res.json(user); //sending entire user object which will return everything about that user in particular
+}); 
+
+app.get('/account', checkLoggedIn, (req, res) => { 
+  res.sendFile('client/index.html', { root: __dirname  }); 
+});
+
+app.put('/account', async (req, res) => {
+  try {
+    const { firstName, lastName, userName, psw, id } = req.body;
+    const updateUser = await db.updatePerson( id, firstName, lastName, userName, psw);
+    res.json(updateUser); 
+  } catch(error) {
+    console.log(error);
+    res.status(500).send("Error updating account");
+  }
+});
+
+app.delete('/account', async (req, res) => {
+  try {
+    const { id } = req.body;
+    const removeUser = await db.deletePerson(id);
+    res.json(removeUser); 
+  } catch(error) {
+    console.log(error);
+    res.status(500).send("Error deleting account.");
+  }
 });
 
 app.get('*', (req, res) => {

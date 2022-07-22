@@ -8,7 +8,8 @@ let db;
 // Create a new LocalStrategy object to handle authentication using username and
 // password credentials from the client. The LocalStrategy object is used to
 // authenticate a user using a username and password.
-const strategy = new Strategy(async (username, password, done) => {
+const strategy = new Strategy({}, async (username, password, done) => {
+  console.log("USER", username, "PASSWORD", password);
   if (!db){
     return done(null, false, {message: "db not ready!"});
   }

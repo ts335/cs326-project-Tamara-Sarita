@@ -1,5 +1,6 @@
 import 'dotenv/config';
 import { MongoClient, ServerApiVersion } from 'mongodb';
+import { ObjectId } from "bson";
 
 const uri = "mongodb+srv://tsarita:01763@cluster0.xrflg7s.mongodb.net/?retryWrites=true&w=majority";
 
@@ -49,15 +50,15 @@ export default class PeopleDatabase {
   }
 
   // READ a user from the database.
-  async readPerson(id) {
-    const res = await this.collection.findOne({ _id: id });
+  async readPerson(username) {
+    const res = await this.collection.findOne({ username });
     return res;
   }
 
   // UPDATE a user in the database.
-  async updatePerson(firstname, username, lastname, psw ) {
+  async updatePerson(id, firstname, username, lastname, psw ) {
     const res = await this.collection.updateOne(
-      //{ _id: id },
+      { _id: ObjectId(id) },
       { $set: { firstname, username, lastname, psw } }
     );
     return res;
@@ -68,7 +69,7 @@ export default class PeopleDatabase {
     // Note: the result received back from MongoDB does not contain the
     // entire document that was deleted from the database. Instead, it
     // only contains the 'deletedCount' (and an acknowledged field).
-    const res = await this.collection.deleteOne({ _id: id });
+    const res = await this.collection.deleteOne({ _id: ObjectId(id) });
     return res;
   }
 
