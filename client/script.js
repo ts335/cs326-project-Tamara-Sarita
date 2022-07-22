@@ -1,3 +1,4 @@
+import * as crud from './crud.js';
 //constants being used in file
 const header = document.querySelector('.header');
 const mainNav = document.querySelector('.mainNav');
@@ -313,7 +314,7 @@ function registerContent() {
             object[key] = value;
         });
         var json = JSON.stringify(object);
-        const resp = await fetch("/register", { //returns promise
+        const resp = await fetch("/register", { //fetch call
             method:"POST",
             body:json, //passing form data as body of request
             headers: {'Content-Type': 'application/json'}
@@ -336,18 +337,19 @@ function loginContent() {
             object[key] = value;
         });
         var json = JSON.stringify(object);
-        const resp = await fetch("/login", { //returns promise
+        const resp = await fetch("/login", { //fetch call
             method:"POST",
             body:json, //passing form data as body of request
             headers: {'Content-Type': 'application/json'}
         });
-        respData = await resp.json(); //only asking for json data on body of response - make global - persist response
-
+       if (resp.status === 200) {
+            respData = await resp.json();
+       } else {
+        alert("Invalid login. Please try again.");
+        loginContent();
+       }
         if (resp.ok) { 
             accountContent();
-        } else {
-            alert('Invalid login. Try again.');
-            loginContent();
         }
     });
 }
@@ -358,11 +360,16 @@ function accountContent() {
     //go through form data fields and go through global resp.json variable to fill in the data
      //write a personalized welcome message for the user
 
+    // const resp = await fetch("/account", { //fetch call
+    //     method: "PUT",
+    //     body: json, //passing form data as body of request
+    //     headers: {'Content-Type': 'application/json'}
+    // });
+
+    //if user is logged in then...
     let currentUserId = respData._id;
 
     const form = contentSection.querySelector("form");
-    
-
     let firstNameField = contentSection.querySelector("#firstName");
     let lastNameField = contentSection.querySelector("#lastName");
     let userNameField = contentSection.querySelector("#userName");
@@ -383,25 +390,29 @@ function accountContent() {
             object[key] = value;
         });
         var json = JSON.stringify(object);
-        const resp = await fetch("/account", { //returns promise
+        const resp = await fetch("/account", { //fetch call
             method: "PUT",
             body: json, //passing form data as body of request
             headers: {'Content-Type': 'application/json'}
         });
-        respData = await resp.json(); //only asking for json data on body of response - make global - persist response
+        respData = await resp.json();
+        if (resp.ok){
+            alert("Your information was successfully updated!");
+        }
     });
 
     //add event listener for delete button that will fetch homepage once user is deleted. 
-    deleteBtn.addEventListener("click", async(event) => {
+    deleteBtn.addEventListener("click", async() => {
         var jsonID={id: currentUserId};
         jsonID = JSON.stringify(jsonID);
-        const resp = await fetch("/account", { //returns promise
+        const resp = await fetch("/account", { //fetch call
             method:"DELETE",
             body: jsonID, //passing form data as body of request
             headers: {'Content-Type': 'application/json'}
         });
         respData = await resp.json();
         if (resp.ok) {
+            alert("The account was successfully deleted.");
             blogContent();
         }
     });

@@ -63,9 +63,14 @@ app.get('/login', (req, res) => {
 });
 
 app.post('/login', async (req, res) =>{
-
-  const { id, userName, psw } = req.body; 
-  const user = await db.readPerson(userName);
+  const { userName, psw } = req.body; 
+  let user;
+  try {
+    user = await db.readPerson(userName);
+  } catch(error){
+    console.log(error);
+    res.status(400).send("Error finding user");
+  }
   if (!user) {
     return res.status(400).send("Invalid username. Try again."); //maybe add alert and redirect them?
   }
