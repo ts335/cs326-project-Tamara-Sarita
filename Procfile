@@ -1,1 +1,1 @@
-web: node server/routes.js
+web: npx nodemon
