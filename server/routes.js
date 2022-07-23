@@ -24,7 +24,7 @@ const sessionConfig = { // Session configuration
   };
 
 app.use(expressSession(sessionConfig)); //setting up session middleware
-app.use(express.static('client')); //used to render static page
+app.use(express.static('client')); //used to render static page from client
 app.use(express.json()); //for application to accept JSON
 app.use(express.urlencoded({extended: true})); //gets data from form
 auth.configure(app, db); //configure auth
@@ -38,7 +38,7 @@ function checkLoggedIn(req, res, next) {
       res.redirect('/login');
     }
   }
-
+//CRUD: get, post, put, delete are all used in routes
 app.get("/", checkLoggedIn, (req, res) => {
     res.sendFile('client/index.html', { root: __dirname  }); //routing homepage
 });
@@ -50,7 +50,7 @@ app.get('/register', (req, res) => {
 app.post('/register', async (req, res) => {
   const { firstName, lastName, userName, psw } = req.body;
   try {
-    const newUser = await db.createPerson(firstName, lastName, userName, psw);
+    const newUser = await db.createPerson(firstName, lastName, userName, psw); //CRUD: creating user
     res.json(newUser); 
   } catch(error) {
     console.log(error);
@@ -66,7 +66,7 @@ app.post('/login', async (req, res) =>{
   const { userName, psw } = req.body; 
   let user;
   try {
-    user = await db.readPerson(userName);
+    user = await db.readPerson(userName); //CRUD: reading user
   } catch(error){
     console.log(error);
     res.status(400).send("Error finding user");
@@ -88,7 +88,7 @@ app.get('/account', checkLoggedIn, (req, res) => {
 app.put('/account', async (req, res) => {
   try {
     const { firstName, lastName, userName, psw, id } = req.body;
-    const updateUser = await db.updatePerson( id, firstName, lastName, userName, psw);
+    const updateUser = await db.updatePerson( id, firstName, lastName, userName, psw); //CRUD: updating user
     res.json(updateUser); 
   } catch(error) {
     console.log(error);
@@ -99,7 +99,7 @@ app.put('/account', async (req, res) => {
 app.delete('/account', async (req, res) => {
   try {
     const { id } = req.body;
-    const removeUser = await db.deletePerson(id);
+    const removeUser = await db.deletePerson(id); //CRUD: deleting user
     res.json(removeUser); 
   } catch(error) {
     console.log(error);

@@ -1,5 +1,3 @@
-import * as crud from './crud.js';
-//constants being used in file
 const header = document.querySelector('.header');
 const mainNav = document.querySelector('.mainNav');
 
@@ -54,6 +52,7 @@ const accountView = `<center><form action="/account" method="post">
     <br>
     <div class="buttons">
     <button type="submit" id="update" class="login">Update</button>
+    <button type="button" id="logout" class="login">Log Out</button>
     <br><br>
     <button type="button" id="delete" class="register">Delete Account</button>
     </div></div>
@@ -302,6 +301,7 @@ switch(path) {
 }
 
 let respData;
+let loggedIn = false;
 
 function registerContent() {
     contentSection.innerHTML = registerView;
@@ -327,6 +327,9 @@ function registerContent() {
 }
 
 function loginContent() {
+    if (loggedIn) {
+        alert(`User is already logged in. Please log out on account page first.`);
+    } else {
     contentSection.innerHTML = loginView;
     const form = contentSection.querySelector("form");
     form.addEventListener("submit", async (event) => {
@@ -349,25 +352,22 @@ function loginContent() {
         loginContent();
        }
         if (resp.ok) { 
+            loggedIn = true;
             accountContent();
         }
     });
 }
+}
 
 function accountContent() {
-    //if user is logged in display view otherwise send alert and redirect user back to homepage by calling blogContent()
-    contentSection.innerHTML = accountView;
-    //go through form data fields and go through global resp.json variable to fill in the data
-     //write a personalized welcome message for the user
+    if (!loggedIn){
+        alert('Please log in before accessing the account page.');
+    } else {
+        contentSection.innerHTML = accountView;
+   
 
-    // const resp = await fetch("/account", { //fetch call
-    //     method: "PUT",
-    //     body: json, //passing form data as body of request
-    //     headers: {'Content-Type': 'application/json'}
-    // });
-
-    //if user is logged in then...
-    let currentUserId = respData._id;
+    //respData is global variable of data from the server
+    let currentUserId = respData._id; //getting the user id from respData (json) in order to uses it in delete fetch call
 
     const form = contentSection.querySelector("form");
     let firstNameField = contentSection.querySelector("#firstName");
@@ -375,6 +375,7 @@ function accountContent() {
     let userNameField = contentSection.querySelector("#userName");
     let passwordField = contentSection.querySelector("#psw");
     let deleteBtn = contentSection.querySelector("#delete");
+    let logoutBtn = contentSection.querySelector("#logout");
 
     firstNameField.value = respData.firstname;
     lastNameField.value = respData.lastname;
@@ -401,9 +402,16 @@ function accountContent() {
         }
     });
 
+    logoutBtn.addEventListener("click", () => {
+        loggedIn = false;
+        respData, currentUserId = {}
+        blogContent();
+    });
+
     //add event listener for delete button that will fetch homepage once user is deleted. 
     deleteBtn.addEventListener("click", async() => {
-        var jsonID={id: currentUserId};
+        loggedIn = false;
+        var jsonID={id: currentUserId}; 
         jsonID = JSON.stringify(jsonID);
         const resp = await fetch("/account", { //fetch call
             method:"DELETE",
@@ -416,6 +424,7 @@ function accountContent() {
             blogContent();
         }
     });
+}
 }
 
 //intersection observer - enables header background after user has scrolled past a specific point 

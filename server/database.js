@@ -27,10 +27,10 @@ export default class PeopleDatabase {
 
     if (count === 0) {
       await this.collection.insertMany([
-        { _id: '1', firstname: 'Artemis', lastname: 'A', username: "Art", psw: "abc123" },
-        { _id: '2', firstname: 'Parzival', lastname: 'P', username: "Parz", psw: "abc456" },
-        { _id: '3', firstname: 'John', lastname: 'J', username: "Jay", psw: "abc789" },
-        { _id: '4', firstname: 'Mia', lastname: 'M', username: "Miam", psw: "abc101" },
+        { firstname: 'Artemis', lastname: 'A', username: "Art", psw: "abc123" },
+        { firstname: 'Parzival', lastname: 'P', username: "Parz", psw: "abc456" },
+        { firstname: 'John', lastname: 'J', username: "Jay", psw: "abc789" },
+        { firstname: 'Mia', lastname: 'M', username: "Miam", psw: "abc101" },
       ]);
     }
   }
