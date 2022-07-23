@@ -21,7 +21,7 @@
 - Please click on the video link below. Thank you for a wonderful semester and all the generous support! I learned a lot and enjoyed the class!
 
 # Video Demo
-Link: 
+Link: https://streamable.com/uv3mi4
 
 # Heroku Link:
 https://cs326-project-tamara.herokuapp.com/
